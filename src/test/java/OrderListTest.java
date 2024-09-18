@@ -41,7 +41,7 @@ public class OrderListTest {
                 .get(ORDER_LIST)
                 .then()
                 .statusCode(200)
-                .body("orders", notNullValue());
+                .body("orders", is(not(empty())));
     }
 
     @After
