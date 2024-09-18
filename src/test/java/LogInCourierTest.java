@@ -1,6 +1,7 @@
 import courier.CreationCourier;
 import courier.LoginCourier;
 import io.restassured.RestAssured;
+import io.restassured.response.Response;
 import org.hamcrest.MatcherAssert;
 import org.junit.After;
 import org.junit.Before;
@@ -12,22 +13,27 @@ import static org.hamcrest.CoreMatchers.notNullValue;
 import static org.hamcrest.Matchers.equalTo;
 
 public class LogInCourierTest {
+
+    private int courierId;
+
     @Before
     public void setUp() {
         RestAssured.baseURI = URL;
     }
     @Before
-    public void CreateCourierForTest() {
+    public void createCourierForTest() {
         CreationCourier courier = new CreationCourier("ninja", "password123", "Пуська");
 
-        given()
-                .contentType("application/json")
+        Response response = given()
+                .contentType("applicaсtion/json")
                 .body(courier)
                 .when()
                 .post(COURIER_CREATE)
                 .then()
-                .statusCode(201)
-                .assertThat().body("ok", equalTo(true));
+                .extract()
+                .response();
+
+        courierId = response.jsonPath().getInt("id");
 
     }
 
@@ -93,8 +99,8 @@ public class LogInCourierTest {
         given()
                 .contentType("application/json")
                 .when()
-                .delete("/api/v1/courier/:1") // Используем ID для удаления
+                .delete("/api/v1/courier/" + courierId) // Используем ID для удаления
                 .then()
-                .statusCode(200);  // Убедитесь, что удаление прошло успешно
+                .statusCode(200);
     }
 }
